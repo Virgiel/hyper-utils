@@ -42,7 +42,7 @@ pub fn parse_scheme<'a>(map: &'a HeaderMap, uri: &'a Uri) -> &'a str {
 
 /// Parse request host
 pub fn parse_host<'a>(map: &'a HeaderMap, uri: &'a Uri) -> &'a str {
-    str_header_first(map, "x-forwarded-proto")
+    str_header_first(map, "x-forwarded-host")
         .or_else(|| str_header(map, "host"))
         .or_else(|| uri.authority().map(|a| a.host()))
         .unwrap_or("localhost")
