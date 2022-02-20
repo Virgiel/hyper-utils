@@ -7,6 +7,7 @@ use hyper::{
 use libdeflater::{CompressionLvl, Compressor};
 
 pub mod error;
+pub use base64;
 
 /// Get body content as bytes if its length is under a limit
 pub async fn body_bytes_max(body: Body, max: u64) -> Result<Option<Bytes>, hyper::Error> {
