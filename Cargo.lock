@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "base64"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
+
+[[package]]
 name = "bytes"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -119,8 +125,10 @@ dependencies = [
 name = "hyper-utils"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "hyper",
  "libdeflater",
+ "xxhash-rust",
 ]
 
 [[package]]
@@ -224,3 +232,9 @@ dependencies = [
  "log",
  "try-lock",
 ]
+
+[[package]]
+name = "xxhash-rust"
+version = "0.8.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "886f21441c6731b9e06a9fdacbc5e29319c17a4069c2a511d80349874864702d"

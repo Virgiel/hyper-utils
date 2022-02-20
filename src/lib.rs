@@ -1,6 +1,7 @@
 use hyper::{
     body::{Bytes, HttpBody},
     header::{self, HeaderName},
+    http::response,
     Body, HeaderMap, Response, StatusCode, Uri,
 };
 use libdeflater::{CompressionLvl, Compressor};
@@ -77,4 +78,38 @@ pub fn compress(in_data: &[u8]) -> Vec<u8> {
     let gzip_size = compressor.gzip_compress(in_data, &mut gzip).unwrap();
     gzip.resize(gzip_size, 0);
     gzip
+}
+
+/// Handle matching etag by changing status code and removing body
+pub fn etag_handle(map: &HeaderMap, mut response: Response<Body>) -> Response<Body> {
+    let rmap = response.headers();
+    if map
+        .get(header::IF_NONE_MATCH)
+        .and_then(|h| rmap.get(header::ETAG).map(|it| h == it))
+        .unwrap_or(false)
+    {
+        *response.status_mut() = StatusCode::NOT_MODIFIED;
+        *response.body_mut() = Body::empty();
+    }
+    response
+}
+
+/// Generate strong etag from bytes
+fn etag(bytes: &[u8]) -> String {
+    let mut buf = [b'"'; 24];
+    let hash = xxhash_rust::xxh3::xxh3_128(bytes);
+    base64::encode_config_slice(hash.to_le_bytes(), base64::URL_SAFE_NO_PAD, &mut buf[1..24]);
+    std::str::from_utf8(&buf).unwrap().to_string()
+}
+
+/// Generate an etag from body content and handle etag match
+pub fn etag_auto(map: &HeaderMap, response: response::Builder, body: Bytes) -> Response<Body> {
+    let etag = etag(&body);
+    etag_handle(
+        map,
+        response
+            .header(header::ETAG, etag)
+            .body(Body::from(body))
+            .unwrap(),
+    )
 }
