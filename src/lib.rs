@@ -8,6 +8,7 @@ use libdeflater::{CompressionLvl, Compressor};
 
 pub mod error;
 pub use base64;
+use tokio::signal;
 
 /// Get body content as bytes if its length is under a limit
 pub async fn body_bytes_max(body: Body, max: u64) -> Result<Option<Bytes>, hyper::Error> {
@@ -113,4 +114,31 @@ pub fn etag_auto(map: &HeaderMap, response: response::Builder, body: Bytes) -> R
             .body(Body::from(body))
             .unwrap(),
     )
+}
+
+/// Shutdown signal listener 
+pub async fn shutdown_signal() {
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        signal::unix::signal(signal::unix::SignalKind::terminate())
+            .expect("failed to install signal handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {},
+        _ = terminate => {},
+    }
+
+    println!("signal received, starting graceful shutdown");
 }
