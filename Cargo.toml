@@ -9,7 +9,7 @@ edition = "2021"
 # Web
 hyper = { version = "0.14"}
 # Fast gzip compression
-libdeflater = "0.7"
+libdeflater = "0.8"
 # Fast hash
 xxhash-rust = { version = "0.8", features = ["xxh3"] }
 # Fast base 64

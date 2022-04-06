@@ -39,6 +39,9 @@ pub trait ErrorHelper<O>: Sized {
     fn bad_request(self) -> O {
         self.status(StatusCode::BAD_REQUEST)
     }
+    fn bad_gateway(self) -> O {
+        self.status(StatusCode::BAD_GATEWAY)
+    }
     fn status(self, status: StatusCode) -> O;
 }
 
