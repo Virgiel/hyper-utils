@@ -16,3 +16,9 @@ libdeflater = "0.8"
 xxhash-rust = { version = "0.8", features = ["xxh3"] }
 # Fast base 64
 base64 = "0.13"
+# Efficient route matching
+matchit = "0.6.0"
+# Future utils lib
+futures = "0.3.21"
+# Macro for codegen
+duplicate = "0.4.0"

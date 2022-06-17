@@ -7,7 +7,10 @@ use hyper::{
 use libdeflater::{CompressionLvl, Compressor};
 
 pub mod error;
+pub mod routing;
+
 pub use base64;
+
 use tokio::signal;
 
 /// Get body content as bytes if its length is under a limit
