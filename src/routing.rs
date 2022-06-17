@@ -1,9 +1,9 @@
 use std::{collections::BTreeMap, future::Future};
 
+use crate::error::{HttpError, HttpResult};
 use duplicate::duplicate_item;
 use futures::future::BoxFuture;
 use hyper::{http::Method, Body, StatusCode};
-use crate::error::{HttpError, HttpResult};
 
 type Handler<T> = Box<
     dyn Fn(T, BTreeMap<String, String>) -> BoxFuture<'static, HttpResult> + Send + Sync + 'static,
@@ -84,16 +84,15 @@ where
 
 pub struct Router<T> {
     inner: matchit::Router<Route<T>>,
-    catch_all: Route<T>,
 }
 
 impl<T> Router<T> {
-    pub fn new<'a>(routes: Vec<(&'a str, Route<T>)>, catch_all: Route<T>) -> Self {
+    pub fn new<'a>(routes: Vec<(&'a str, Route<T>)>) -> Self {
         let mut inner = matchit::Router::new();
         for (route, value) in routes {
             inner.insert(route, value).unwrap();
         }
-        Self { inner, catch_all }
+        Self { inner }
     }
 
     pub fn at<'a>(
@@ -101,18 +100,17 @@ impl<T> Router<T> {
         path: &'a str,
         method: Method,
     ) -> Result<(BTreeMap<String, String>, &'a Handler<T>), HttpError> {
-        let (map, route) = if let Ok(r) = self.inner.at(path) {
-            (
-                r.params
-                    .iter()
-                    .map(|(a, b)| (a.to_string(), b.to_string()))
-                    .collect(),
-                r.value,
-            )
-        } else {
-            (BTreeMap::new(), &self.catch_all)
-        };
+        let route = self
+            .inner
+            .at(path)
+            .map_err(|_| HttpError::new(StatusCode::NOT_FOUND, Body::empty()))?;
+        let map = route
+            .params
+            .iter()
+            .map(|(a, b)| (a.to_string(), b.to_string()))
+            .collect();
         route
+            .value
             .at(method)
             .ok_or(HttpError::new(
                 StatusCode::METHOD_NOT_ALLOWED,
