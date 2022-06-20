@@ -4,6 +4,7 @@ use crate::error::{HttpError, HttpResult};
 use duplicate::duplicate_item;
 use futures::future::BoxFuture;
 use hyper::{http::Method, Body, StatusCode};
+use matchit::{Match, Params};
 
 type Handler<T> = Box<
     dyn Fn(T, BTreeMap<String, String>) -> BoxFuture<'static, HttpResult> + Send + Sync + 'static,
@@ -61,8 +62,9 @@ impl<T> Route<T> {
         }
     }
 
-    fn at(&self, method: Method) -> Option<&Handler<T>> {
-        self.methods.get(&MethodOrd(method))
+    fn at(&self, method: &Method) -> Option<&Handler<T>> {
+        // Fix clone in the future
+        self.methods.get(&MethodOrd(method.clone()))
     }
 }
 
@@ -95,27 +97,19 @@ impl<T> Router<T> {
         Self { inner }
     }
 
-    pub fn at<'a>(
+    pub fn at<'a, 'b>(
         &'a self,
-        path: &'a str,
-        method: Method,
-    ) -> Result<(BTreeMap<String, String>, &'a Handler<T>), HttpError> {
-        let route = self
+        path: &'b str,
+        method: &Method,
+    ) -> Result<(&'a Handler<T>, Params<'a, 'b>), HttpError> {
+        let Match { value, params } = self
             .inner
             .at(path)
             .map_err(|_| HttpError::new(StatusCode::NOT_FOUND, Body::empty()))?;
-        let map = route
-            .params
-            .iter()
-            .map(|(a, b)| (a.to_string(), b.to_string()))
-            .collect();
-        route
-            .value
-            .at(method)
-            .ok_or(HttpError::new(
-                StatusCode::METHOD_NOT_ALLOWED,
-                Body::empty(),
-            ))
-            .map(|h| (map, h))
+        let handler = value.at(method).ok_or(HttpError::new(
+            StatusCode::METHOD_NOT_ALLOWED,
+            Body::empty(),
+        ))?;
+        Ok((handler, params))
     }
 }
