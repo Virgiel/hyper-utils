@@ -89,7 +89,7 @@ pub struct Router<T> {
 }
 
 impl<T> Router<T> {
-    pub fn new<'a>(routes: Vec<(&'a str, Route<T>)>) -> Self {
+    pub fn new<'a>(routes: impl IntoIterator<Item =(&'a str, Route<T>)>) -> Self {
         let mut inner = matchit::Router::new();
         for (route, value) in routes {
             inner.insert(route, value).unwrap();

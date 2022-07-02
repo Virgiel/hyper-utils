@@ -7,11 +7,11 @@ edition = "2021"
 
 [dependencies]
 # Web
-hyper = { version = "0.14" }
+hyper = "0.14"
 # Async engine
-tokio = { version = "1.18", features = ["signal", "macros"] }
+tokio = { version = "1.19", features = ["signal", "macros"] }
 # Fast gzip compression
-libdeflater = "0.8"
+libdeflater = "0.9"
 # Fast hash
 xxhash-rust = { version = "0.8", features = ["xxh3"] }
 # Fast base 64

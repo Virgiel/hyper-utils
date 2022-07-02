@@ -1,11 +1,11 @@
 use hyper::{
     body::{Bytes, HttpBody},
     header::{self, HeaderName},
-    http::response,
-    Body, HeaderMap, Response, StatusCode, Uri,
+    Body, HeaderMap, Response, StatusCode, Uri, http::response::Builder,
 };
 use libdeflater::{CompressionLvl, Compressor};
 
+pub mod app;
 pub mod error;
 pub mod routing;
 
@@ -108,7 +108,7 @@ fn etag(bytes: &[u8]) -> String {
 }
 
 /// Generate an etag from body content and handle etag match
-pub fn etag_auto(map: &HeaderMap, response: response::Builder, body: Bytes) -> Response<Body> {
+pub fn etag_auto(map: &HeaderMap, response: Builder, body: Bytes) -> Response<Body> {
     let etag = etag(&body);
     etag_handle(
         map,
@@ -119,7 +119,7 @@ pub fn etag_auto(map: &HeaderMap, response: response::Builder, body: Bytes) -> R
     )
 }
 
-/// Shutdown signal listener 
+/// Shutdown signal listener
 pub async fn shutdown_signal() {
     let ctrl_c = async {
         signal::ctrl_c()
