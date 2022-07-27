@@ -10,6 +10,7 @@ pub mod error;
 pub mod routing;
 
 pub use base64;
+pub use libdeflater;
 
 use tokio::signal;
 
