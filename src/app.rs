@@ -1,4 +1,7 @@
-use std::net::SocketAddr;
+use std::{
+    net::{IpAddr, SocketAddr},
+    str::FromStr,
+};
 
 use futures::{future::BoxFuture, Future};
 use hyper::{http::request::Parts, Body, Request, Response};
@@ -16,10 +19,10 @@ pub struct Ctx<S> {
 }
 
 impl<S> Ctx<S> {
-    pub fn ip(&self) -> String {
+    pub fn ip(&self) -> IpAddr {
         client_ip(&self.parts.headers)
-            .map(|s| s.to_string())
-            .unwrap_or_else(|| self.addr.ip().to_string())
+            .and_then(|s| IpAddr::from_str(s).ok())
+            .unwrap_or_else(|| self.addr.ip())
     }
 }
 
@@ -45,7 +48,10 @@ impl<S: Clone + Send + Sync + 'static> App<S> {
         }
     }
 
-    pub fn routes<'a>(mut self, routes: impl IntoIterator<Item =(&'a str, Route<(Ctx<S>, Body)>)>) -> Self {
+    pub fn routes<'a>(
+        mut self,
+        routes: impl IntoIterator<Item = (&'a str, Route<(Ctx<S>, Body)>)>,
+    ) -> Self {
         self.router = Router::new(routes);
         self
     }
