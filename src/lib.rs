@@ -1,13 +1,15 @@
 use hyper::{
     body::{Bytes, HttpBody},
     header::{self, HeaderName},
-    Body, HeaderMap, Response, StatusCode, Uri, http::response::Builder,
+    http::response::Builder,
+    Body, HeaderMap, Response, StatusCode, Uri,
 };
 use libdeflater::{CompressionLvl, Compressor};
 
 pub mod app;
 pub mod error;
 pub mod routing;
+pub use derive;
 
 pub use base64;
 pub use libdeflater;

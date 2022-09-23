@@ -3,13 +3,14 @@ name = "hyper-utils"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[workspace]
+members = ["derive"]
 
 [dependencies]
 # Web
 hyper = "0.14"
 # Async engine
-tokio = { version = "1.19", features = ["signal", "macros"] }
+tokio = { version = "1.21", features = ["signal", "macros"] }
 # Fast gzip compression
 libdeflater = "0.10"
 # Fast hash
@@ -19,6 +20,8 @@ base64 = "0.13"
 # Efficient route matching
 matchit = "0.6.0"
 # Future utils lib
-futures = "0.3.21"
+futures = "0.3.24"
 # Macro for codegen
-duplicate = "0.4.0"
+duplicate = "0.4.1"
+
+derive = { path = "derive" }
