@@ -12,7 +12,7 @@ hyper = "0.14"
 # Async engine
 tokio = { version = "1.21", features = ["signal", "macros"] }
 # Fast gzip compression
-libdeflater = "0.10"
+libdeflater = "0.11"
 # Fast hash
 xxhash-rust = { version = "0.8", features = ["xxh3"] }
 # Fast base 64
@@ -20,7 +20,7 @@ base64 = "0.13"
 # Efficient route matching
 matchit = "0.6.0"
 # Future utils lib
-futures = "0.3.24"
+futures = "0.3"
 # Macro for codegen
 duplicate = "0.4.1"
 
