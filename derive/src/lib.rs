@@ -2,7 +2,6 @@ use std::fmt::Write;
 use std::str::FromStr;
 
 use proc_macro::Delimiter;
-use proc_macro::Ident;
 use proc_macro::TokenStream;
 use proc_macro::TokenTree;
 use proc_macro_error::abort;
