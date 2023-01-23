@@ -1,3 +1,4 @@
+use base64::{prelude::BASE64_URL_SAFE_NO_PAD, Engine};
 use hyper::{
     body::{Bytes, HttpBody},
     header::{self, HeaderName},
@@ -106,7 +107,10 @@ pub fn etag_handle(map: &HeaderMap, mut response: Response<Body>) -> Response<Bo
 fn etag(bytes: &[u8]) -> String {
     let mut buf = [b'"'; 24];
     let hash = xxhash_rust::xxh3::xxh3_128(bytes);
-    base64::encode_config_slice(hash.to_le_bytes(), base64::URL_SAFE_NO_PAD, &mut buf[1..24]);
+    assert_eq!(
+        BASE64_URL_SAFE_NO_PAD.encode_slice(hash.to_le_bytes(), &mut buf[1..24]),
+        Ok(22)
+    );
     std::str::from_utf8(&buf).unwrap().to_string()
 }
 
