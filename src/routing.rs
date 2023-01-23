@@ -56,7 +56,7 @@ impl<T> Route<T> {
         self.add(Method::method, handler)
     }
 
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             methods: BTreeMap::new(),
         }
@@ -66,22 +66,6 @@ impl<T> Route<T> {
         // Fix clone in the future
         self.methods.get(&MethodOrd(method.clone()))
     }
-}
-
-#[duplicate_item(
-        fun      method;
-        [get]    [GET];
-        [post]   [POST];
-        [put]    [PUT];
-        [delete] [DELETE];
-        [patch]  [PATCH]
-      )]
-pub fn fun<T, H, R>(handler: H) -> Route<T>
-where
-    H: Fn(T, BTreeMap<String, String>) -> R + Send + Sync + 'static,
-    R: Future<Output = HttpResult> + Send + 'static,
-{
-    Route::new().add(Method::method, handler)
 }
 
 pub struct Router<T> {

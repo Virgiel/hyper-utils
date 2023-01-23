@@ -21,11 +21,8 @@ pub fn routes(item: TokenStream) -> TokenStream {
     out.push('[');
     for (path, methods) in routes {
         write!(out, "({},", path.path).unwrap();
-        let mut iter = methods.into_iter();
-        if let Some((method, function)) = iter.next() {
-            out_method(&mut out, &path.args, &method, function);
-        }
-        for (method, function) in iter {
+        out.push_str("hyper_utils::routing::Route::new()");
+        for (method, function) in methods {
             out.push('.');
             out_method(&mut out, &path.args, &method, function);
         }
