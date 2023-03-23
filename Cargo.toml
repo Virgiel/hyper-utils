@@ -10,7 +10,7 @@ members = ["derive"]
 # Web
 hyper = "0.14"
 # Async engine
-tokio = { version = "1.24", features = ["signal", "macros"] }
+tokio = { version = "1.26", features = ["signal", "macros"] }
 # Fast gzip compression
 libdeflater = "0.12"
 # Fast hash
@@ -22,6 +22,6 @@ matchit = "0.7"
 # Future utils lib
 futures = "0.3"
 # Macro for codegen
-duplicate = "0.4"
+duplicate = "1.0"
 
 derive = { path = "derive" }
