@@ -12,6 +12,10 @@ impl HttpError {
         Self { status, body }
     }
 
+    pub fn status(status: StatusCode) -> Self {
+        Self::new(status, Body::empty())
+    }
+
     pub fn response(self) -> Response<Body> {
         Response::builder()
             .status(self.status)
@@ -21,8 +25,8 @@ impl HttpError {
 }
 
 impl From<StatusCode> for HttpError {
-    fn from(code: StatusCode) -> Self {
-        Self::new(code, Body::empty())
+    fn from(status: StatusCode) -> Self {
+        Self::status(status)
     }
 }
 
@@ -32,6 +36,7 @@ impl<E: std::error::Error> From<(StatusCode, E)> for HttpError {
         Self::new(code, Body::empty())
     }
 }
+
 pub trait ErrorHelper<O>: Sized {
     fn unexpected(self) -> O {
         self.status(StatusCode::INTERNAL_SERVER_ERROR)
